@@ -18,7 +18,7 @@ import java.util.List;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>
 {
     List<Recipe> recipes;
-    static TextView recipe;
+    static TextView recipe,servings,steps;
     static CardView cardView;
 
 
@@ -39,6 +39,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         {
             super(v);
             recipe =  v.findViewById(R.id.txt);
+            servings = v.findViewById(R.id.servings);
+            steps = v.findViewById(R.id.steps);
             cardView = v.findViewById(R.id.cardView);
         }
 
@@ -65,6 +67,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.bind(recipes.get(position), listener);
         Recipe recipeStr = recipes.get(position);
         recipe.setText(recipeStr.getName());
+        servings.setText(String.valueOf(recipeStr.getServings()));
+        steps.setText(String.valueOf(recipeStr.getSteps().size()));
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.List;
 public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.RecipeStepViewHolder>
 {
     List<Step> steps;
-    static TextView stepDescription;
+    static TextView orderNo,stepDescription;
     //static CardView cardView;
 
 
@@ -37,7 +37,8 @@ public static class RecipeStepViewHolder extends RecyclerView.ViewHolder
     public RecipeStepViewHolder(View v, final Context context)
     {
         super(v);
-        stepDescription =  v.findViewById(R.id.txt);
+        stepDescription =  v.findViewById(R.id.stepDescName);
+        orderNo = v.findViewById(R.id.orderNo);
         //cardView = v.findViewById(R.id.cardView);
     }
 
@@ -54,7 +55,7 @@ public static class RecipeStepViewHolder extends RecyclerView.ViewHolder
     @Override
     public RecipeStepAdapter.RecipeStepViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.step_description_item, parent, false);
         return new RecipeStepAdapter.RecipeStepViewHolder(view,parent.getContext());
     }
 
@@ -64,6 +65,7 @@ public static class RecipeStepViewHolder extends RecyclerView.ViewHolder
         holder.bind(steps.get(position), listener);
         Step step = steps.get(position);
         stepDescription.setText(step.getShortDescription());
+        orderNo.setText(" #"+String.valueOf(steps.indexOf(step)));
     }
 
     @Override
