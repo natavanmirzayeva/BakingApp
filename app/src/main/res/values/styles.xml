@@ -9,8 +9,6 @@
     </style>
 
     <style name="textView">
-
-        <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textStyle">italic</item>
