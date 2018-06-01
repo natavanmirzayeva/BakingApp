@@ -3,5 +3,11 @@
     <color name="colorPrimary">#4DB6AC</color>
     <color name="colorPrimaryDark">#26A69A</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="lightGray">#EEEEEE</color>
+    <color name="lightGray">#f5f5f5</color>
+    <color name="recipeTitle">#37474f</color>
+    <color name="recipeSubtitle">#607d8b</color>
+    <color name="ingredientTitle">@color/colorPrimaryDark</color>
+    <color name="ingredientSubtitle">#616161</color>
+    <color name="lineDark">#e0e0e0</color>
+    <color name="lineLight">#eeeeee</color>
 </resources>

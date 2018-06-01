@@ -80,4 +80,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public int getItemCount() {
         return recipes.size();
     }
+
+    public  List<Recipe> getRecipes()
+    {
+        return recipes;
+    }
+
+
+    public void setRecipes(List<Recipe> recipes)
+    {
+        this.recipes = recipes;
+    }
 }

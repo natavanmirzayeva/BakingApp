@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
 {
     List<Step> steps;
     static TextView orderNo,stepDescription;
-    //static CardView cardView;
+    static ImageButton imageButton;
 
 
     public interface OnItemClickListener {
@@ -39,16 +40,16 @@ public static class RecipeStepViewHolder extends RecyclerView.ViewHolder
         super(v);
         stepDescription =  v.findViewById(R.id.stepDescName);
         orderNo = v.findViewById(R.id.orderNo);
-        //cardView = v.findViewById(R.id.cardView);
+        imageButton = v.findViewById(R.id.deta);
     }
 
     public void bind(final Step step, final RecipeStepAdapter.OnItemClickListener listener)
     {
-           /* cardView.setOnClickListener(new View.OnClickListener() {
+            imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(ingredient);
+                    listener.onItemClick(step);
                 }
-            }); */
+            });
     }
 }
 

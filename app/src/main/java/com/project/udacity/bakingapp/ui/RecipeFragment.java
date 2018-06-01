@@ -1,31 +1,29 @@
 package com.project.udacity.bakingapp.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.project.udacity.bakingapp.Ingredient;
 import com.project.udacity.bakingapp.MainActivity;
 import com.project.udacity.bakingapp.R;
 import com.project.udacity.bakingapp.Recipe;
 import com.project.udacity.bakingapp.RecipeAdapter;
-import com.project.udacity.bakingapp.data.RecipeResponse;
 import com.project.udacity.bakingapp.data.RecipesApi;
 import com.project.udacity.bakingapp.utils.Variables;
 
@@ -50,7 +48,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RecipeFragment extends Fragment
 {
-
     public RecipeFragment(){}
     @BindView(R.id.recipe_recycler)
     RecyclerView recipe;
@@ -58,6 +55,11 @@ public class RecipeFragment extends Fragment
     static Observable<JsonArray> call;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
+    private static final String RECYCLERVIEW_STATE_ADAPTER = "recyclerview-state-adapter";
+    RecipeAdapter recipeAdapter;
+    Parcelable savedRecyclerLayoutState;
+    private static final String RECYCLERVIEW_STATE = "recyclerview-state-1";
+    private boolean mTwoPane;
 
     @Nullable
     @Override
@@ -65,16 +67,37 @@ public class RecipeFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.fragment_recipe,container,false);
         ButterKnife.bind(this,view);
-        /*List<String> myDataSet = new ArrayList<String>();
-        myDataSet.add("Tiramisu");
-        myDataSet.add("Cheesecake");*/
-        if(savedInstanceState == null)
+        setRetainInstance(true);
+
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        TextView textView = toolbar.findViewById(R.id.txt_toolbar);
+        textView.setText("Recipes");
+        final MainActivity activity = (MainActivity) getActivity();
+
+        if (toolbar != null)
         {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setTitle("Recipes");
+            if(toolbar.getNavigationIcon() != null) toolbar.setNavigationIcon(null);
+        }
+
+
             linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
             gridLayoutManager = new GridLayoutManager(getContext(),3);
             parseJson();
-        }
+        
+        if(isTablet(getContext())) recipe.setLayoutManager(gridLayoutManager);
+        else recipe.setLayoutManager(linearLayoutManager);
+
         return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     public  void parseJson()
@@ -98,30 +121,7 @@ public class RecipeFragment extends Fragment
                 {
                     Recipe recipe  = gson.fromJson(recipeResponse.get(i), Recipe.class);
                     recipes.add(recipe);
-                }
-                ;
-               /* for(int i=0;i<recipeResponse.size();i++)
-                {
-
-                    JsonObject jsonObject = recipeResponse.get(i).getAsJsonObject();
-                    int id = jsonObject.get("id").getAsInt();
-                    String name = jsonObject.get("name").toString();
-                    List<Ingredient> ingredients = new ArrayList<>();
-                    jsonObject.get("ingredients").
-                    for (int j=0;j<jsonObject.getAsJsonArray("ingredients").get(i).getAsJsonObject().size();j++)
-                    {
-                        Ingredient ingredient = new Ingredient();
-                        ingredient.setIngredient(jsonObject.getAsJsonArray("ingredients").get(j).getAsJsonObject().get("ingredient").toString());
-                        Log.d("quantity", String.valueOf(ingredient.getIngredient()));
-                        ingredients.add(ingredient);
-                    }
-
-
-                    recipe.setId(id);
-                    recipe.setName(delete_quotes(name));
-                    recipes.add(recipe);
-                } */
-
+                };
                 return recipes;
             }
         })
@@ -145,7 +145,7 @@ public class RecipeFragment extends Fragment
 
     void displayMovies(List<Recipe> recipeList)
     {
-        RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList, new RecipeAdapter.OnItemClickListener() {
+         recipeAdapter = new RecipeAdapter(recipeList, new RecipeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Recipe recipe)
             {
@@ -153,26 +153,60 @@ public class RecipeFragment extends Fragment
                 bundle.putParcelable("Recipe",recipe);
                 RecipeDetailFragment recipeFragment = new RecipeDetailFragment();
                 recipeFragment.setArguments(bundle);
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
-                        .replace(R.id.fragmet_container,recipeFragment)
+                        //.remove(recipeFragment1)
+                        .replace(R.id.fragmet_container,recipeFragment,"detail")
+                        .addToBackStack(null)
                         .commit();
             }
         });
 
         recipe.setAdapter(recipeAdapter);
-        if(isTablet(getContext())) recipe.setLayoutManager(gridLayoutManager);
-        else recipe.setLayoutManager(linearLayoutManager);
-
-    }
-
-    static String delete_quotes(String word)
-    {
-        return word.replaceAll("^\"|\"$" ,"");
     }
 
     public static boolean isTablet(Context ctx){
         return (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECYCLERVIEW_STATE, recipe.getLayoutManager().onSaveInstanceState());
+        if(recipeAdapter!= null)
+        {
+            List<Recipe> movie = recipeAdapter.getRecipes();
+            if (movie != null && !movie.isEmpty()) {
+                outState.putParcelableArrayList(RECYCLERVIEW_STATE_ADAPTER, (ArrayList<? extends Parcelable>) movie);
+            }
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState)
+    {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null)
+        {
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(RECYCLERVIEW_STATE);
+            if (savedInstanceState.containsKey(RECYCLERVIEW_STATE_ADAPTER)) {
+                List<Recipe> movieResultList = savedInstanceState.getParcelableArrayList(RECYCLERVIEW_STATE_ADAPTER);
+                recipeAdapter.setRecipes(movieResultList);
+                recipe.setAdapter(recipeAdapter);
+            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (savedRecyclerLayoutState != null)
+                    {
+                        if (savedInstanceState.containsKey(RECYCLERVIEW_STATE_ADAPTER)) {
+                            recipe.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                            savedRecyclerLayoutState = null;
+                        }
+                    }
+                }
+            }, 3000);
+        }
     }
 
 }
