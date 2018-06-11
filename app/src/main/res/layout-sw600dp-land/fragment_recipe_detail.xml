@@ -85,19 +85,18 @@
         android:background="@color/colorPrimary"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        ></View>
+   />
 
     <LinearLayout
         android:id="@+id/linear_layout"
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ScrollView
+        <FrameLayout
             android:id="@+id/fragment_recipe_detail_media"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-        </ScrollView>
+        </FrameLayout>
     </LinearLayout>
 
 </LinearLayout>

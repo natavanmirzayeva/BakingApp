@@ -246,12 +246,6 @@ public class RecipeDetailMediaFragment extends Fragment
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         //super.onSaveInstanceState(outState);
         if(player != null)

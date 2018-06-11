@@ -97,7 +97,7 @@ public class RecipeFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(false);
     }
 
     public  void parseJson()
@@ -208,5 +208,6 @@ public class RecipeFragment extends Fragment
             }, 3000);
         }
     }
+
 
 }
