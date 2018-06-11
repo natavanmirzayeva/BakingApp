@@ -133,7 +133,7 @@ public class RecipeDetailFragment extends Fragment
             if(recipeDetailMediaFragment != null)
             {
                 fragmentTransaction
-                        .replace(R.id.fragment_recipe_detail_media,recipeDetailMediaFragment,"media")
+                        .replace(R.id.fragmet_container,recipeDetailMediaFragment,"media")
                         .addToBackStack("detail")
                         .commit();
             }
