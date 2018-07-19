@@ -21,8 +21,6 @@ public class RecipeDetailAdapter extends  RecyclerView.Adapter<RecipeDetailAdapt
 {
     List<Ingredient> ingredients;
     static TextView quantity,measure,ingredient;
-    //static CardView cardView;
-
 
     public interface OnItemClickListener {
         void onItemClick(Ingredient ingredient);
@@ -48,11 +46,7 @@ public class RecipeDetailAdapter extends  RecyclerView.Adapter<RecipeDetailAdapt
 
         public void bind(final Ingredient ingredient, final RecipeDetailAdapter.OnItemClickListener listener)
         {
-           /* cardView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    listener.onItemClick(ingredient);
-                }
-            }); */
+
         }
     }
 
