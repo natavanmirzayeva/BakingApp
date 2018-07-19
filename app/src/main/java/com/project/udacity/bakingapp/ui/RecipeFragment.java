@@ -156,7 +156,7 @@ public class RecipeFragment extends Fragment
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
                         //.remove(recipeFragment1)
-                        .replace(R.id.fragmet_container,recipeFragment,"detail")
+                       // .replace(R.id.fragmet_container,recipeFragment,"detail")
                         .addToBackStack(null)
                         .commit();
             }
