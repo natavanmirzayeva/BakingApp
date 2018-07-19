@@ -15,7 +15,7 @@
                 <TextView
                     android:id="@+id/txt_quantity"
                     style="@style/textView"
-                    android:text="Recipe"
+                    android:text=""
                     android:textColor="@color/ingredientSubtitle"
                     android:textSize="16sp"
                     android:textStyle="bold|italic" />
@@ -24,7 +24,7 @@
                     android:id="@+id/txt_measure"
                     style="@style/textView"
                     android:layout_marginLeft="2dp"
-                    android:text="Recipe"
+                    android:text=""
                     android:textColor="@color/ingredientSubtitle"
                     android:textSize="16sp"
                     android:textStyle="bold|italic" />
@@ -34,7 +34,7 @@
                     style="@style/textView"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:text="dasdjsadhsajdhsjadhsakjdhkshdksadhj"
+                    android:text=""
                     android:textColor="@color/ingredientSubtitle" />
         </LinearLayout>
 
