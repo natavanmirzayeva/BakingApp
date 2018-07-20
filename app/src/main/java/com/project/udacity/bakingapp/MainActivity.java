@@ -7,6 +7,10 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String RECYCLERVIEW_STATE = "recyclerview-state-1";
     private boolean mTwoPane;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isTablet(this)) recipe.setLayoutManager(gridLayoutManager);
         else recipe.setLayoutManager(linearLayoutManager);
-        ;
+
     }
 
     private void checkConnection() {
@@ -178,4 +183,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert11 = builder1.create();
         alert11.show();
     }
+
+
 }
