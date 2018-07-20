@@ -1,16 +1,20 @@
 package com.project.udacity.bakingapp.ui;
 
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +34,6 @@ import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -45,16 +48,16 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
+import com.google.gson.Gson;
 import com.project.udacity.bakingapp.DetailActivity;
 import com.project.udacity.bakingapp.R;
 import com.project.udacity.bakingapp.Step;
-import com.squareup.picasso.Picasso;
+import com.project.udacity.bakingapp.widget.WidgetProvider;
 
 import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by mehseti on 12.5.2018.
@@ -88,10 +91,12 @@ public class RecipeDetailMediaFragment extends Fragment {
     @BindView(R.id.placeholderImage)
     ImageView placeholderImage;
 
+    @BindView(R.id.setWidget)
+    AppCompatButton setWidget;
+
     static int currentStepNo = -1;
 
     private SimpleExoPlayer player;
-    private Timeline.Window window;
     private DataSource.Factory mediaDataSourceFactory;
     private DefaultTrackSelector trackSelector;
     private boolean shouldAutoPlay;
@@ -102,20 +107,16 @@ public class RecipeDetailMediaFragment extends Fragment {
     }
 
     Step step;
-    private static final String SELECTED_POSITION = "position";
-    private ImageView ivHideControllerButton;
-    private long exo_current_position = 0;
-    private Unbinder unbinder;
+
     private boolean playerStopped = false, nextButtonVisible = true, previousButtonVisible = true;
     private long playerStopPosition = 0;
     private boolean playerState = false;
-    private int RENDERER_COUNT = 300000;
-    private int minBufferMs = 250000;
-    private final int BUFFER_SEGMENT_SIZE = 64 * 1024;
-    private final int BUFFER_SEGMENT_COUNT = 256;
     DetailActivity activity = null;
     Toolbar toolbar;
     View view;
+
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     @Nullable
     @Override
@@ -123,6 +124,11 @@ public class RecipeDetailMediaFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_recipe_detail_media, container, false);
         activity = (DetailActivity) getActivity();
         ButterKnife.bind(this, view);
+
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        editor = preferences.edit();
+
         toolbar = activity.findViewById(R.id.toolbar);
         TextView textView = toolbar.findViewById(R.id.txt_toolbar);
         textView.setText("Recipe Detail Media");
@@ -167,6 +173,26 @@ public class RecipeDetailMediaFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 activity.goStep(currentStepNo + 1);
+            }
+        });
+
+        setWidget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+
+                Gson gson = new Gson();
+
+                editor.putString("widgetRecipe", gson.toJson(activity.getRecipe()));
+                editor.commit();
+
+                Intent intent = new Intent(activity, WidgetProvider.class);
+                intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+                int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(activity, WidgetProvider.class));
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                activity.sendBroadcast(intent);
+
             }
         });
 
@@ -286,7 +312,7 @@ public class RecipeDetailMediaFragment extends Fragment {
             Log.i("thumbnailurl", thumbnailUrl);
             MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
 
-            mediaMetadataRetriever .setDataSource(thumbnailUrl, new HashMap<String, String>());
+            mediaMetadataRetriever.setDataSource(thumbnailUrl, new HashMap<String, String>());
             Bitmap bmFrame = mediaMetadataRetriever.getFrameAtTime(1); //unit in microsecond
             placeholderImage.setImageBitmap(bmFrame);
         }

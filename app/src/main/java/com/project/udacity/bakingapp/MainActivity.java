@@ -3,14 +3,12 @@ package com.project.udacity.bakingapp;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.IdlingResource;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,11 +39,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    /*@BindView(R.id.toolbar)Toolbar toolbar;
-    @BindView(R.id.collapse)CollapsingToolbarLayout collapse;
-    private static final String FRAGMENT_STACK_KEY = "FRAGMENT_STACK_KEY";
-
-    private Stack<StackEntry> fragmentsStack = new Stack<StackEntry>(); */
     @BindView(R.id.recipe_recycler)
     RecyclerView recipe;
     @BindView(R.id.toolbar)
@@ -54,18 +47,19 @@ public class MainActivity extends AppCompatActivity {
     static Observable<JsonArray> call;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
-    private static final String RECYCLERVIEW_STATE_ADAPTER = "recyclerview-state-adapter";
     RecipeAdapter recipeAdapter;
-    Parcelable savedRecyclerLayoutState;
-    private static final String RECYCLERVIEW_STATE = "recyclerview-state-1";
-    private boolean mTwoPane;
-
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = preferences.edit();
+
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -115,8 +109,16 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < recipeResponse.size(); i++) {
                     Recipe recipe = gson.fromJson(recipeResponse.get(i), Recipe.class);
                     recipes.add(recipe);
+
+                    String widgetRecipe = preferences.getString("widgetRecipe", "");
+
+                   if (widgetRecipe.equals("")) {
+                        editor.putString("widgetRecipe", gson.toJson(recipeResponse.get(i)));
+                        editor.commit();
+                    }
+
                 }
-                ;
+
                 return recipes;
             }
         })
